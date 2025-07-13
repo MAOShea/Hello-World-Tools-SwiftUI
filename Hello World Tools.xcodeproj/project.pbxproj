@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		27BAB8B42E23DF82006D9733 /* FoundationModels.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BAB8B32E23DF82006D9733 /* FoundationModels.framework */; };
+		27BAB8B62E23DF96006D9733 /* libChatCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BAB8B52E23DF96006D9733 /* libChatCore.dylib */; };
+		27BAB8B72E23DF96006D9733 /* libChatCore.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 27BAB8B52E23DF96006D9733 /* libChatCore.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		27BAB8272E22CC35006D9733 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -23,10 +29,27 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		27BAB8B82E23DF96006D9733 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				27BAB8B72E23DF96006D9733 /* libChatCore.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		27BAB8192E22CC34006D9733 /* Hello World Tools.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hello World Tools.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		27BAB8262E22CC35006D9733 /* Hello World ToolsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Hello World ToolsTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		27BAB8302E22CC35006D9733 /* Hello World ToolsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Hello World ToolsUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		27BAB8432E22CC5A006D9733 /* ChatCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ChatCore.xcodeproj; path = /Users/mike/Documents/ChatCore/ChatCore/ChatCore.xcodeproj; sourceTree = "<absolute>"; };
+		27BAB8B32E23DF82006D9733 /* FoundationModels.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FoundationModels.framework; path = System/Library/Frameworks/FoundationModels.framework; sourceTree = SDKROOT; };
+		27BAB8B52E23DF96006D9733 /* libChatCore.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libChatCore.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +75,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27BAB8B42E23DF82006D9733 /* FoundationModels.framework in Frameworks */,
+				27BAB8B62E23DF96006D9733 /* libChatCore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,9 +100,11 @@
 		27BAB8102E22CC34006D9733 = {
 			isa = PBXGroup;
 			children = (
+				27BAB8432E22CC5A006D9733 /* ChatCore.xcodeproj */,
 				27BAB81B2E22CC34006D9733 /* Hello World Tools */,
 				27BAB8292E22CC35006D9733 /* Hello World ToolsTests */,
 				27BAB8332E22CC35006D9733 /* Hello World ToolsUITests */,
+				27BAB8B22E23DF82006D9733 /* Frameworks */,
 				27BAB81A2E22CC34006D9733 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -92,6 +119,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		27BAB8B22E23DF82006D9733 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				27BAB8B52E23DF96006D9733 /* libChatCore.dylib */,
+				27BAB8B32E23DF82006D9733 /* FoundationModels.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -102,6 +138,7 @@
 				27BAB8152E22CC34006D9733 /* Sources */,
 				27BAB8162E22CC34006D9733 /* Frameworks */,
 				27BAB8172E22CC34006D9733 /* Resources */,
+				27BAB8B82E23DF96006D9733 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
