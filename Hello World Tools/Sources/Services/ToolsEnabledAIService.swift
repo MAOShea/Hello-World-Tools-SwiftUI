@@ -2,66 +2,67 @@
 //  ToolsEnabledAIService.swift
 //  Hello World Tools
 //
-//  Created by mike on 04/07/2025.
+//  Created by mike on 15/07/2025.
 //
 
 import Foundation
 import FoundationModels
 import ChatCore
+import SwiftUI
 import Combine
 
-@MainActor
-public class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable, ObservableObject {
+public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable {
+    @Published public var isLoading = false
+    @Published public var lastError: String?
     
-    @Published private var _isLoading = false
-    @Published private var _lastError: String?
+    private let session: LanguageModelSession
     
-    public var isLoading: Bool { self._isLoading }
-    public var lastError: String? { self._lastError }
-    
-    private var session: LanguageModelSession?
+    public init() {
+        print("🔧 DEBUG: Creating tools-enabled session with instructions builder...")
+        let instructions = Instructions {
+            Constants.Prompts.humanRolePrompt
+        }
+        print("🔧 DEBUG: Instructions created: \(instructions)")
+        
+        // Create tools array
+        let tools: [any Tool] = [ToolSendWidgetToOutput(), ToolB()]
+        
+        // Configure session with tools
+        session = LanguageModelSession(tools: tools) {
+            instructions
+        }
+        print("✅ Tools-enabled LanguageModelSession created successfully")
+        print("🔧 Available tools: \(tools.map { $0.name }.joined(separator: ", "))")
+        
+        // Prewarm the session like Apple's sample
+        session.prewarm()
+        print("🔥 Session prewarmed")
+    }
     
     @MainActor
     public func sendMessage(_ input: String) async -> String? {
-        // Initialize session if needed
-        if session == nil {
-            do {
-                session = LanguageModelSession()
-                print("✅ LanguageModelSession created successfully")
-            } catch {
-                _lastError = "Failed to create AI session: \(error.localizedDescription)"
-                print("❌ Failed to create session: \(error)")
-                return nil
-            }
-        }
-        
-        guard let session = session else {
-            _lastError = "Failed to create AI session"
-            return nil
-        }
-        
-        _isLoading = true
-        _lastError = nil
+        isLoading = true
+        lastError = nil
         
         do {
             print("🤖 Sending message to AI: \(input)")
             let response = try await session.respond(to: input)
-            _isLoading = false
+            isLoading = false
             print("✅ AI response received: \(response.content)")
             return response.content
         } catch {
-            _isLoading = false
+            isLoading = false
             
             // Handle specific model availability error
             if let generationError = error as? LanguageModelSession.GenerationError {
                 switch generationError {
                 case .assetsUnavailable:
-                    _lastError = "AI model is not available. Please download the model in System Settings > AI."
+                    lastError = "AI model is not available. Please download the model in System Settings > AI."
                 default:
-                    _lastError = "AI Error: \(generationError.localizedDescription)"
+                    lastError = "AI Error: \(generationError.localizedDescription)"
                 }
             } else {
-                _lastError = "Failed to send message: \(error.localizedDescription)"
+                lastError = "Failed to send message: \(error.localizedDescription)"
             }
             
             print("❌ AI Error: \(error)")
@@ -78,4 +79,4 @@ public class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable, Obse
             return nil
         }
     }
-} 
+}

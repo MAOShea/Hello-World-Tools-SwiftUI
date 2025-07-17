@@ -24,12 +24,12 @@ struct ContentView: View {
                                 Text("Start a conversation with your local AI...")
                                     .foregroundColor(.secondary)
                                 
-                                Button("🚀 Boot Up as Widget Designer") {
-                                    viewModel.bootUpWithRole()
+/*                                 Button("🚀 Boot Up as Widget Designer") {
+                                    viewModel.bootUpWithRole(firstPrompt: Constants.Prompts.humanRolePrompt)
                                 }
                                 .buttonStyle(.borderedProminent)
                                 .disabled(viewModel.isLoading)
-                            }
+ */                            }
                             .padding()
                         } else {
                             ForEach(viewModel.conversationHistory) { message in
@@ -50,15 +50,15 @@ struct ContentView: View {
                         }
                     }
                     .padding()
-                    .onChange(of: viewModel.conversationHistory.count) { _ in
+                    .onChange(of: viewModel.conversationHistory.count) { oldValue, newValue in
                         if let lastMessage = viewModel.conversationHistory.last {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 proxy.scrollTo(lastMessage.id, anchor: .bottom)
                             }
                         }
                     }
-                    .onChange(of: viewModel.isLoading) { isLoading in
-                        if isLoading {
+                    .onChange(of: viewModel.isLoading) { oldValue, newValue in
+                        if newValue {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 proxy.scrollTo("loading", anchor: .bottom)
                             }
@@ -103,7 +103,7 @@ struct ContentView: View {
                     Toggle("Structured", isOn: $viewModel.useStructuredOutput)
                         .toggleStyle(.switch)
                         .scaleEffect(0.8)
-                        .onChange(of: viewModel.useStructuredOutput) { newValue in
+                        .onChange(of: viewModel.useStructuredOutput) { oldValue, newValue in
                             print("🔧 DEBUG: Structured toggle changed to: \(newValue)")
                         }
                     

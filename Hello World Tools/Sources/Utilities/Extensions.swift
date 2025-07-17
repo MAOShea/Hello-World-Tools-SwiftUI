@@ -36,9 +36,6 @@ struct RoundedCorner: Shape {
         let bottomLeft = corners.contains(.bottomLeft)
         let bottomRight = corners.contains(.bottomRight)
         
-        let width = rect.width
-        let height = rect.height
-        
         // Start from top-left
         if topLeft {
             path.move(to: CGPoint(x: rect.minX + radius, y: rect.minY))
