@@ -11,8 +11,8 @@ import SwiftUI
 
 @Observable
 class ToolSendWidgetToOutput: Tool {
-    let name = "Send Widget To Output"
-    let description = "Sends a widget's properties to an output."
+    let name = "Send Übersicht Widget To Output"
+    let description = "Sends a Übersicht widget's properties to an output."
     
     @Generable
     struct Arguments {
