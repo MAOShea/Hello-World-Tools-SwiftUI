@@ -10,9 +10,9 @@ import FoundationModels
 import SwiftUI
 
 @Observable
-class ToolSendWidgetToOutput: Tool {
-    let name = "Send Übersicht Widget To Output"
-    let description = "Sends a Übersicht widget's properties to an output."
+class OutputUbersichtWidget: Tool {
+    let name = "OutputUbersichtWidget"
+    let description = "Sends a Übersicht widget's properties to an output and returns a success confirmation message."
     
     @Generable
     struct Arguments {

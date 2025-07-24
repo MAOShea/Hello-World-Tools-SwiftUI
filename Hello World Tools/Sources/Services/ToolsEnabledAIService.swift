@@ -25,7 +25,10 @@ public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable
         print("🔧 DEBUG: Instructions created: \(instructions)")
         
         // Create tools array
-        let tools: [any Tool] = [ToolSendWidgetToOutput(), ToolB()]
+        let tools: [any Tool] = [
+            OutputUbersichtWidget()
+            , TotalLengthOfStrings()
+        ]
         
         // Configure session with tools
         session = LanguageModelSession(tools: tools) {
