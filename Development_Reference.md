@@ -2,9 +2,9 @@
 
 ## Quick Start for New Sessions
 - **Project**: Hello World Tools (HWT) - macOS SwiftUI app with AI tool calling
-- **Current State**: AI service with tools implemented, but `ToolSendWidgetToOutput` not being invoked
-- **Last Major Change**: Converted tools to use `@Observable` classes with `@Generable` arguments
-- **Key Files**: `ToolsEnabledAIService.swift`, `ToolSendWidgetToOutput.swift`, `Constants.swift`
+- **Current State**: AI service with tools implemented, but tools not being invoked due to using simple text responses instead of structured generation
+- **Last Major Change**: Identified that tools require structured generation (`session.streamResponse`) not simple text responses (`session.respond`)
+- **Key Files**: `ToolsEnabledAIService.swift`, `OutputUbersichtWidget.swift`, `TotalLengthOfStrings.swift`, `Constants.swift`
 - **Build**: Requires ChatCore library at `/Users/mike/Documents/ChatCore/ChatCore/ChatCore.xcodeproj`
 
 ## Current Project
@@ -52,8 +52,8 @@ Sources/
 ├── Services/
 │   └── ToolsEnabledAIService.swift  // AI service with tools and session instructions
 ├── Tools/
-│   ├── ToolSendWidgetToOutput.swift // Widget generation tool
-│   └── ToolB.swift                  // Example tool
+│   ├── OutputUbersichtWidget.swift  // Widget generation tool
+│   └── TotalLengthOfStrings.swift   // String length calculation tool
 ├── Views/
 │   ├── Home/
 │   │   └── ContentView.swift        // Main chat interface
@@ -80,7 +80,6 @@ Resources/
 
 ### AI Chat Interface
 - **Conversation History**: Persistent chat with local AI
-- **Structured Output**: Toggle for different AI response strategies
 - **Widget Generation**: AI-powered Übersicht widget creation with tool calling
 - **Real-time Interaction**: Live chat with loading states and error handling
 - **Session-Level Role**: AI automatically assumes widget designer role
@@ -137,9 +136,9 @@ session = LanguageModelSession(tools: tools) {
 ```swift
 // Tools are @Observable classes with @Generable argument structs
 @Observable
-class ToolSendWidgetToOutput: Tool {
+class OutputUbersichtWidget: Tool {
     @Guide("Generate Übersicht widget artifacts")
-    func call(_ arguments: Arguments) async throws -> String {
+    func call(_ arguments: Arguments) async throws -> ToolOutput {
         // Tool implementation
     }
     
@@ -166,7 +165,6 @@ class ToolSendWidgetToOutput: Tool {
 - Uses Apple's `LanguageModelSession` with session-level instructions and tool calling
 - Role establishment via `LanguageModelSession(tools: instructions:)` parameter
 - AI naturally identifies as widget designer without UI prompts
-- Supports structured output with multiple strategies
 - Handles model availability and content safety errors
 - Provides widget generation capabilities for Übersicht via tool calling
 - Tools are registered and available for AI invocation
@@ -183,38 +181,65 @@ class ToolSendWidgetToOutput: Tool {
 cd /Users/mike/Documents/ChatCore/ChatCore
 xcodebuild -project "ChatCore.xcodeproj" -scheme "ChatCore" -configuration Debug build   
 
+## Critical Issue: Tool Invocation Requires Structured Generation
+
+### Problem Identified
+Tools are not being invoked because the app uses **simple text responses** (`session.respond(to:)`) instead of **structured generation** (`session.streamResponse(generating: Schema.self, ...)`).
+
+### Comparison with Sample App
+**Sample App (FoundationModelsTripPlanner):**
+```swift
+// Uses structured generation
+session.streamResponse(generating: Itinerary.self, ...) {
+    "Generate a \(dayCount)-day itinerary to \(landmark.name)."
+}
+```
+
+**Current App:**
+```swift
+// Uses simple text responses
+session.respond(to: input)
+```
+
+### Why Structured Generation Works Better
+1. **Clear Schema**: AI has a structured output format to follow
+2. **Deliberate Process**: Generation is more methodical than conversation
+3. **Tool Integration**: Tools are part of the structured generation process
+4. **Forced Usage**: Schema requirements force tool invocation when needed
+
+### Current Tools
+- **OutputUbersichtWidget**: Generates Übersicht widget artifacts
+- **TotalLengthOfStrings**: Calculates total length of string arrays
+
 ## Known Issues
 
 ### Tool Invocation Issues
-- **ToolSendWidgetToOutput doesn't get invoked**: The tool is properly registered in `ToolsEnabledAIService` but may not be getting invoked by the AI. This could be due to:
-  - AI not recognizing when to use the tool
-  - Tool argument validation issues
-  - Session instructions not clearly indicating tool usage
-  - Tool name or description not matching AI expectations
+- **Tools not being invoked**: Using `session.respond(to:)` instead of `session.streamResponse(generating:)`
+- **Complex Instructions**: Session instructions are overly complex for simple text responses
+- **Missing Structured Schema**: No clear output structure for AI to follow
 
 ### Recent Changes Made
-- **Tool Implementation**: Converted from manual `GenerationSchema` creation to `@Observable` classes with `@Generable` argument structs
+- **Tool Implementation**: Converted to `@Observable` classes with `@Generable` argument structs
 - **Argument Handling**: Changed `cssClasses` from `[String: String]` dictionary to JSON string due to `@Generable` limitations
-- **Error Handling**: Added proper argument validation and custom error types in `ToolSendWidgetToOutput`
-- **Session Instructions**: Enhanced `humanRolePrompt` in `Constants.swift` to describe available tools and their usage
+- **Error Handling**: Added proper argument validation and custom error types
+- **Tool Names**: Fixed tool name mismatches in session instructions
 
 ### Current Debugging Status
 - **Tool Registration**: ✅ Tools are properly registered in `ToolsEnabledAIService`
 - **Session Creation**: ✅ Session created with tools and instructions
 - **Tool Implementation**: ✅ Tools follow FoundationModels patterns
 - **AI Instructions**: ✅ Session instructions describe tool usage
-- **Missing**: Tool invocation by AI during conversation
+- **Missing**: Structured generation approach for tool invocation
 
 ## Next Steps for Development
-1. **Debug Tool Invocation**: Test if AI recognizes when to use tools
-2. **Verify Instructions**: Ensure session instructions clearly indicate tool usage scenarios
-3. **Test Tool Arguments**: Verify argument parsing and validation works correctly
-4. **Add Logging**: Add debug logging to track when tools are called vs. when they should be called
+1. **Implement Structured Generation**: Create a `WidgetSchema` struct and use `session.streamResponse(generating: WidgetSchema.self, ...)`
+2. **Simplify Instructions**: Reduce complexity of session instructions for structured generation
+3. **Test Tool Invocation**: Verify tools are called during structured generation
+4. **Add Debug Logging**: Track when tools are invoked vs. when they should be invoked
 
 ## Future Enhancements
 - Expand Shared components library
 - Add Profile section views
 - Implement additional AI features
 - Enhance widget generation capabilities
-- Fix tool invocation issues
 - Add more specialized tools for widget design 

@@ -25,7 +25,10 @@ class TotalLengthOfStrings: Tool {
         // Calculate the sum of all string lengths
         let totalLength = arguments.strings.reduce(0) { $0 + $1.count }
         
-        print("🔧            called with \(arguments.strings.count) strings, total length: \(totalLength)")
+        print("🔧 TotalLengthOfStrings called with \(arguments.strings.count) strings:")
+        print("   Strings: \(arguments.strings)")
+        print("   Individual lengths: \(arguments.strings.map { $0.count })")
+        print("   Total length: \(totalLength)")
         
         return ToolOutput("Total length of all strings: \(totalLength)")
     }
