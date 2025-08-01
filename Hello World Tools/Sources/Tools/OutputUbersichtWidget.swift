@@ -8,6 +8,7 @@
 import Foundation
 import FoundationModels
 import SwiftUI
+import UniformTypeIdentifiers
 
 @Observable
 class OutputUbersichtWidget: Tool {
@@ -82,11 +83,21 @@ class OutputUbersichtWidget: Tool {
             }
             print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
             
-            // Simulate widget output processing
-            // In a real implementation, this would write to files or send to Übersicht
-            print("📤 Sending widget to output...")
+            // Generate JSX script using the new function
+            print("📝 Generating JSX script...")
+            let jsxScript = generateUbersichtJSX(arguments: arguments)
             
-            return ToolOutput("Widget sent to output successfully with \(cssClasses.count) CSS classes")
+            print("📄 Generated JSX script length: \(jsxScript.count) characters")
+            print("📄 JSX script preview: \(String(jsxScript.prefix(200)))...")
+            
+            // Write JSX script to disk
+            print("💾 Writing JSX script to disk...")
+            let filePath = try await writeJSXToDisk(jsxScript: jsxScript)
+            
+            print("✅ JSX script written successfully!")
+            print("📁 File location: \(filePath)")
+            
+            return ToolOutput("Widget JSX script generated and saved to Übersicht widgets folder")
             
         } catch let toolError as ToolSendWidgetToOutputError {
             print("❌ ToolSendWidgetToOutput error: \(toolError.localizedDescription)")
@@ -97,6 +108,132 @@ class OutputUbersichtWidget: Tool {
         }
     }
     
+    // MARK: - JSX Generation with String Interpolation
+    
+    private func generateUbersichtJSX(arguments: Arguments) -> String {
+        print("🔧 Generating Übersicht JSX with string interpolation...")
+        
+        // Parse CSS classes from JSON string
+        let cssClasses: [String: String]
+        do {
+            let data = arguments.classNameDictionary.data(using: .utf8) ?? Data()
+            cssClasses = try JSONDecoder().decode([String: String].self, from: data)
+        } catch {
+            print("⚠️ Warning: Could not parse CSS classes JSON: \(error)")
+            cssClasses = [:]
+        }
+        
+        // Convert CSS classes to CSS variables
+        let cssVariables = convertCssClassesToVariables(cssClasses)
+        
+        // Generate JSX using string interpolation
+        let jsxContent = """
+        import { css } from 'uebersicht'; // Optional, use when Emotion's css functions are needed.
+        import { styled } from 'uebersicht'; // Optional, use when Emotion styled functions are needed.
+
+        /* ----- Übersicht exports ---- */
+
+        export const command = "\(arguments.bashCommand)"
+        export const refreshFrequency = \(arguments.refreshFrequency)
+
+        export const render = ({ data_in }) => (
+            \(arguments.htmlContent)
+        );
+
+        export const className = css`
+        \(arguments.cssPositioning)
+        `;
+
+        /* ----- local stuff ---- */
+
+        \(cssVariables)
+        """
+        
+        print("✅ Übersicht JSX generated successfully")
+        print("📄 Generated JSX length: \(jsxContent.count) characters")
+        
+        return jsxContent
+    }
+    
+    private func convertCssClassesToVariables(_ cssClasses: [String: String]) -> String {
+        if cssClasses.isEmpty {
+            return "// No CSS classes defined"
+        }
+        
+        return cssClasses.map { className, css in
+            "const \(className)Style = css`\(css)`;"
+        }.joined(separator: "\n")
+    }
+    
+    // MARK: - File Operations
+    
+    private func writeJSXToDisk(jsxScript: String) async throws -> String {
+        print("💾 Starting file write operation...")
+        
+        // Try to write directly to Übersicht widgets folder first
+        let übersichtWidgetsPath = "\(NSHomeDirectory())/Library/Application Support/Übersicht/widgets"
+        let directURL = URL(fileURLWithPath: übersichtWidgetsPath).appendingPathComponent("index.jsx")
+        
+        do {
+            // Ensure the directory exists
+            try FileManager.default.createDirectory(atPath: übersichtWidgetsPath, withIntermediateDirectories: true)
+            
+            // Write the file
+            try jsxScript.write(to: directURL, atomically: true, encoding: .utf8)
+            print("✅ Successfully wrote JSX to Übersicht widgets folder")
+            return directURL.path
+        } catch {
+            print("⚠️ Direct write to Übersicht folder failed: \(error)")
+            print("🔄 Falling back to file picker...")
+            
+            // Fallback to file picker
+            return try await showFilePicker(jsxScript: jsxScript)
+        }
+    }
+    
+    private func showFilePicker(jsxScript: String) async throws -> String {
+        print("📂 Showing file picker dialog...")
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.main.async {
+                let savePanel = NSSavePanel()
+                savePanel.title = "Save Widget JSX File"
+                savePanel.nameFieldStringValue = "index.jsx"
+                savePanel.allowedContentTypes = [UTType(filenameExtension: "jsx")!]
+                savePanel.canCreateDirectories = true
+                savePanel.isExtensionHidden = false
+                
+                // Set the initial directory to Übersicht widgets folder
+                let übersichtWidgetsPath = "\(NSHomeDirectory())/Library/Application Support/Übersicht/widgets"
+                savePanel.directoryURL = URL(fileURLWithPath: übersichtWidgetsPath)
+                
+                savePanel.begin { response in
+                    if response == .OK {
+                        guard let saveURL = savePanel.url else {
+                            continuation.resume(throwing: ToolSendWidgetToOutputError.fileSaveCancelled)
+                            return
+                        }
+                        
+                        do {
+                            try jsxScript.write(to: saveURL, atomically: true, encoding: .utf8)
+                            print("✅ File saved successfully via file picker")
+                            print("📁 File location: \(saveURL.path)")
+                            continuation.resume(returning: saveURL.path)
+                        } catch {
+                            print("❌ File picker save failed: \(error)")
+                            continuation.resume(throwing: ToolSendWidgetToOutputError.fileWriteError(error))
+                        }
+                    } else {
+                        print("❌ File save cancelled by user")
+                        continuation.resume(throwing: ToolSendWidgetToOutputError.fileSaveCancelled)
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - JSX Generation
+    
     // Custom error types for the tool
     enum ToolSendWidgetToOutputError: LocalizedError {
         case emptyBashCommand
@@ -104,6 +241,8 @@ class OutputUbersichtWidget: Tool {
         case emptyHtmlContent
         case emptyCssPositioning
         case unexpectedError(Error)
+        case fileSaveCancelled
+        case fileWriteError(Error)
         
         var errorDescription: String? {
             switch self {
@@ -117,6 +256,10 @@ class OutputUbersichtWidget: Tool {
                 return "CSS positioning cannot be empty"
             case .unexpectedError(let error):
                 return "Unexpected error: \(error.localizedDescription)"
+            case .fileSaveCancelled:
+                return "File save operation cancelled by user"
+            case .fileWriteError(let error):
+                return "Error writing file: \(error.localizedDescription)"
             }
         }
     }
