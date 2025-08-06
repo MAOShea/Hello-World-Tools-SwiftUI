@@ -3,7 +3,7 @@
 ## Quick Start for New Sessions
 - **Project**: Hello World Tools (HWT) - macOS SwiftUI app with AI tool calling
 - **Current State**: ✅ **WORKING** - AI service with tools implemented and functioning correctly
-- **Last Major Change**: Enhanced OutputUbersichtWidget tool with JSX generation and file operations
+- **Last Major Change**: Fixed JSX content generation and CSS class naming guidance
 - **Key Files**: `ToolsEnabledAIService.swift`, `OutputUbersichtWidget.swift`, `TotalLengthOfStrings.swift`, `Constants.swift`
 - **Build**: Requires ChatCore library at `/Users/mike/Documents/ChatCore/ChatCore/ChatCore.xcodeproj`
 
@@ -220,6 +220,7 @@ Example: "Create weather widget" → Use OutputUbersichtWidget
 ### File Operations Status: ✅ **WORKING**
 - **JSX Generation**: ✅ **WORKING** - Uses string interpolation template
 - **File Writing**: ✅ **WORKING** - Writing to correct Übersicht folder (App Sandbox disabled)
+- **File Picker**: ✅ **WORKING** - System file picker with "first time prompt, then automatic save" behavior
 - **Content Safety**: ✅ **WORKING** - Avoids FoundationModels blocking while preserving debug info
 
 ### App Sandbox Configuration
@@ -227,6 +228,13 @@ Example: "Create weather widget" → Use OutputUbersichtWidget
 - **App Sandbox Setting**: Set to FALSE to allow writing outside sandbox
 - **Target Path**: `/Users/mike/Library/Application Support/Übersicht/widgets/`
 - **Current Path**: `/Users/mike/Library/Application Support/Übersicht/widgets/` ✅ **WORKING**
+
+### File Saving Architecture
+- **FilePickerUtility**: Shared utility in ChatCore for system file picker functionality
+- **Tool-Initiated Saving**: Tools directly call `FilePickerUtility.saveFile()` instead of relying on ChatViewModel detection
+- **First-Time Behavior**: System file picker appears on first save to let user choose location
+- **Subsequent Saves**: Automatic saves to the same location without re-prompting
+- **Concurrency Safety**: `@MainActor` annotation ensures thread-safe shared state management
 
 ### Tool Invocation Discovery
 - **Keyword Requirement**: AI requires "Übersicht widget" keyword to invoke tool
@@ -249,10 +257,15 @@ Example: "Create weather widget" → Use OutputUbersichtWidget
 - ✅ **Tool name mismatches fixed**: All tool names now match between code and instructions
 - ✅ **File system entitlements added**: App can now write files
 - ✅ **File location problem resolved**: App Sandbox disabled to allow writing to correct Übersicht folder
+- ✅ **File picker presentation fixed**: `NSSavePanel.beginSheetModal(for: window)` ensures proper system dialog display
+- ✅ **Duplicate save dialogs eliminated**: ChatViewModel's tool detection disabled for HWT app
+- ✅ **Concurrency safety implemented**: `@MainActor` annotation resolves shared state issues
 
 ### Current Issues
 - ⚠️ **FoundationModels API compatibility**: Symbol linking error suggests version mismatch
 - ⚠️ **Tool invocation requires specific keywords**: "Übersicht widget" needed for tool invocation
+- ⚠️ **JSX generation**: AI sometimes generates plain text instead of proper JSX syntax
+- ⚠️ **CSS class naming**: AI may use hyphens in class names causing JavaScript syntax errors
 
 ### Recent Changes Made
 - **Tool Implementation**: Enhanced `OutputUbersichtWidget` with JSX generation and file operations
@@ -260,6 +273,12 @@ Example: "Create weather widget" → Use OutputUbersichtWidget
 - **File Operations**: Added `writeJSXToDisk()` and `showFilePicker()` functions
 - **Content Safety**: Modified tool output to avoid FoundationModels blocking while preserving debug info
 - **App Sandbox**: Added file system entitlements for file writing capabilities
+- **FilePickerUtility**: Created shared utility in ChatCore for system file picker functionality
+- **ChatViewModel Enhancement**: Added `disableToolCallDetection` flag to prevent duplicate save dialogs
+- **Concurrency Safety**: Implemented `@MainActor` annotation for thread-safe shared state management
+- **JSX Content Fix**: Changed `htmlContent` argument to `jsxContent` with proper JSX description
+- **Widget Definition**: Added comprehensive widget definition to `humanRolePrompt` explaining components
+- **CSS Class Naming**: Added guidance for camelCase/underscore naming to avoid JavaScript syntax errors
 
 ### Current Status
 - **Tool Registration**: ✅ Tools are properly registered in `ToolsEnabledAIService`
@@ -267,16 +286,18 @@ Example: "Create weather widget" → Use OutputUbersichtWidget
 - **Tool Implementation**: ✅ Tools follow FoundationModels patterns with enhanced functionality
 - **AI Instructions**: ✅ Session instructions are clear and effective
 - **Tool Invocation**: ✅ Tools are being called correctly by AI (with proper keywords)
-- **File Operations**: ⚠️ **WIP** - Functional but writing to wrong location
+- **File Operations**: ✅ **WORKING** - Writing to correct Übersicht folder with proper file picker behavior
 
 ## Next Steps for Development
-1. **Fix file location issue**: Resolve sandbox path problem to write to correct Übersicht folder
-2. **Update FoundationModels**: Resolve symbol linking error with Xcode/macOS update
-3. **Improve session instructions**: Add "widget" = "Übersicht widget" terminology
-4. **Test widget creation**: Verify AI creates proper widgets with correct file locations
-5. **Enhance widget capabilities**: Add more specialized tools for different widget types
-6. **Improve error handling**: Add better error messages for tool failures
-7. **Add debugging tools**: Create tools for testing and validation
+1. **Update FoundationModels**: Resolve symbol linking error with Xcode/macOS update
+2. **Improve session instructions**: Add "widget" = "Übersicht widget" terminology
+3. **Test widget creation**: Verify AI creates proper widgets with correct file locations
+4. **Enhance widget capabilities**: Add more specialized tools for different widget types
+5. **Improve error handling**: Add better error messages for tool failures
+6. **Add debugging tools**: Create tools for testing and validation
+7. **Improve output quality**: Work on enhancing the quality and reliability of the model's generated widget code
+8. **Test JSX generation**: Verify AI generates proper JSX syntax instead of plain text
+9. **Test CSS class naming**: Ensure AI uses camelCase/underscore naming conventions
 
 ## Future Enhancements
 - Expand Shared components library

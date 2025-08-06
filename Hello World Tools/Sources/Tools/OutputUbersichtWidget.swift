@@ -25,18 +25,19 @@ class OutputUbersichtWidget: Tool {
         let refreshFrequency: Int
         
         @Guide(description: """
-        The widget's HTML content. Each DOM element can contain a className attribute.
+        The widget's JSX content. Each DOM element can contain a className attribute.
         All className attributes must have a matching entry in the classNameDictionary 
         where the item's key value matches the className attribute's value.
         """)
-        let htmlContent: String
+        let jsxContent: String
 
         @Guide(description: "The widget's positioning, in Standard CSS format ().")
         let cssPositioning: String
 
         @Guide(description: """
         JSON string representation of Emotion-style CSS items. Format: {"className1": "css1", "className2": "css2"}.
-        The key strings match className attributes in the htmlContent. Use "{}" if no CSS classes are needed.
+        The key strings match className attributes in the jsxContent. Use "{}" if no CSS classes are needed.
+        Note: CSS class names should use camelCase or underscores, not hyphens, as they become JavaScript variable names.
         """)
         let classNameDictionary: String
     }
@@ -52,8 +53,8 @@ class OutputUbersichtWidget: Tool {
                 throw ToolSendWidgetToOutputError.invalidRefreshFrequency
             }
             
-            guard !arguments.htmlContent.isEmpty else {
-                throw ToolSendWidgetToOutputError.emptyHtmlContent
+            guard !arguments.jsxContent.isEmpty else {
+                throw ToolSendWidgetToOutputError.emptyJsxContent
             }
             
             guard !arguments.cssPositioning.isEmpty else {
@@ -76,8 +77,8 @@ class OutputUbersichtWidget: Tool {
             print("📋 Bash Command: \(arguments.bashCommand)")
             print("⏱️  Refresh Frequency: \(arguments.refreshFrequency)ms")
             print("🎨 CSS Positioning: \(arguments.cssPositioning)")
-            print("📄 HTML Content:")
-            print("   \(arguments.htmlContent)")
+            print("📄 JSX Content:")
+            print("   \(arguments.jsxContent)")
             print("🎯 CSS Classes (\(cssClasses.count) items):")
             for (className, css) in cssClasses {
                 print("   • \(className): \(css)")
@@ -150,7 +151,7 @@ class OutputUbersichtWidget: Tool {
         export const refreshFrequency = \(arguments.refreshFrequency)
 
         export const render = ({ data_in }) => (
-            \(arguments.htmlContent)
+            \(arguments.jsxContent)
         );
 
         export const className = css`
@@ -188,7 +189,7 @@ class OutputUbersichtWidget: Tool {
     enum ToolSendWidgetToOutputError: LocalizedError {
         case emptyBashCommand
         case invalidRefreshFrequency
-        case emptyHtmlContent
+        case emptyJsxContent
         case emptyCssPositioning
         case unexpectedError(Error)
         case fileSaveCancelled
@@ -200,8 +201,8 @@ class OutputUbersichtWidget: Tool {
                 return "Bash command cannot be empty"
             case .invalidRefreshFrequency:
                 return "Refresh frequency must be greater than 0"
-            case .emptyHtmlContent:
-                return "HTML content cannot be empty"
+            case .emptyJsxContent:
+                return "JSX content cannot be empty"
             case .emptyCssPositioning:
                 return "CSS positioning cannot be empty"
             case .unexpectedError(let error):
