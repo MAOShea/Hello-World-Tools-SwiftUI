@@ -9,6 +9,7 @@ import Foundation
 import FoundationModels
 import SwiftUI
 import UniformTypeIdentifiers
+import ChatCore
 
 @Observable
 class OutputUbersichtWidget: Tool {
@@ -90,14 +91,26 @@ class OutputUbersichtWidget: Tool {
             print("📄 Generated JSX script length: \(jsxScript.count) characters")
             print("📄 JSX script preview: \(String(jsxScript.prefix(200)))...")
             
-            // Write JSX script to disk
-            print("💾 Writing JSX script to disk...")
-            let filePath = try await writeJSXToDisk(jsxScript: jsxScript)
+            // Generate JSX script and save it directly
+            print("📝 JSX script generated successfully!")
+            print("📄 Generated JSX script length: \(jsxScript.count) characters")
             
-            print("✅ JSX script written successfully!")
-            print("📁 File location: \(filePath)")
+            // Save the file directly using FilePickerUtility
+            print("💾 Calling FilePickerUtility to save JSX file...")
+            let savedPath = await FilePickerUtility.saveFile(
+                content: jsxScript,
+                defaultName: "widget",
+                fileExtension: "jsx",
+                initialDirectory: "\(NSHomeDirectory())/Library/Application Support/Übersicht/widgets"
+            )
             
-            return ToolOutput("Widget JSX script generated and saved to Übersicht widgets folder")
+            if let path = savedPath {
+                print("✅ File saved successfully to: \(path)")
+                return ToolOutput("Widget JSX script generated and saved to: \(path)")
+            } else {
+                print("❌ File save was cancelled or failed")
+                return ToolOutput("Widget JSX script generated but save was cancelled")
+            }
             
         } catch let toolError as ToolSendWidgetToOutputError {
             print("❌ ToolSendWidgetToOutput error: \(toolError.localizedDescription)")
@@ -167,70 +180,7 @@ class OutputUbersichtWidget: Tool {
     
     // MARK: - File Operations
     
-    private func writeJSXToDisk(jsxScript: String) async throws -> String {
-        print("💾 Starting file write operation...")
-        
-        // Try to write directly to Übersicht widgets folder first
-        let übersichtWidgetsPath = "\(NSHomeDirectory())/Library/Application Support/Übersicht/widgets"
-        let directURL = URL(fileURLWithPath: übersichtWidgetsPath).appendingPathComponent("index.jsx")
-        
-        do {
-            // Ensure the directory exists
-            try FileManager.default.createDirectory(atPath: übersichtWidgetsPath, withIntermediateDirectories: true)
-            
-            // Write the file
-            try jsxScript.write(to: directURL, atomically: true, encoding: .utf8)
-            print("✅ Successfully wrote JSX to Übersicht widgets folder")
-            return directURL.path
-        } catch {
-            print("⚠️ Direct write to Übersicht folder failed: \(error)")
-            print("🔄 Falling back to file picker...")
-            
-            // Fallback to file picker
-            return try await showFilePicker(jsxScript: jsxScript)
-        }
-    }
-    
-    private func showFilePicker(jsxScript: String) async throws -> String {
-        print("📂 Showing file picker dialog...")
-        
-        return try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.main.async {
-                let savePanel = NSSavePanel()
-                savePanel.title = "Save Widget JSX File"
-                savePanel.nameFieldStringValue = "index.jsx"
-                savePanel.allowedContentTypes = [UTType(filenameExtension: "jsx")!]
-                savePanel.canCreateDirectories = true
-                savePanel.isExtensionHidden = false
-                
-                // Set the initial directory to Übersicht widgets folder
-                let übersichtWidgetsPath = "\(NSHomeDirectory())/Library/Application Support/Übersicht/widgets"
-                savePanel.directoryURL = URL(fileURLWithPath: übersichtWidgetsPath)
-                
-                savePanel.begin { response in
-                    if response == .OK {
-                        guard let saveURL = savePanel.url else {
-                            continuation.resume(throwing: ToolSendWidgetToOutputError.fileSaveCancelled)
-                            return
-                        }
-                        
-                        do {
-                            try jsxScript.write(to: saveURL, atomically: true, encoding: .utf8)
-                            print("✅ File saved successfully via file picker")
-                            print("📁 File location: \(saveURL.path)")
-                            continuation.resume(returning: saveURL.path)
-                        } catch {
-                            print("❌ File picker save failed: \(error)")
-                            continuation.resume(throwing: ToolSendWidgetToOutputError.fileWriteError(error))
-                        }
-                    } else {
-                        print("❌ File save cancelled by user")
-                        continuation.resume(throwing: ToolSendWidgetToOutputError.fileSaveCancelled)
-                    }
-                }
-            }
-        }
-    }
+    // File operations now handled by FilePickerUtility in ChatCore
     
     // MARK: - JSX Generation
     
