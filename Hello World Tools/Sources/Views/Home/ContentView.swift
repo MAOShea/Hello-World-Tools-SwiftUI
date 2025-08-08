@@ -83,41 +83,16 @@ struct ContentView: View {
                         } else {
                             // Enter: send message
                             print("🔧 DEBUG: Enter key pressed")
-                            print("🔧 DEBUG: useStructuredOutput = \(viewModel.useStructuredOutput)")
                             print("🔧 DEBUG: promptStrategy = \(viewModel.promptStrategy)")
                             
-                            if viewModel.useStructuredOutput {
-                                print("🔧 DEBUG: Calling sendStructuredMessage")
-                                viewModel.sendStructuredMessage(viewModel.userInput)
-                            } else {
-                                print("🔧 DEBUG: Calling sendMessage")
-                                viewModel.sendMessage()
-                            }
+                            print("🔧 DEBUG: Calling sendMessage")
+                            viewModel.sendMessage()
                             return .handled
                         }
                     }
                 
                 // Toolbar aligned with lower edge
                 HStack {
-                    // Structured output toggle
-                    Toggle("Structured", isOn: $viewModel.useStructuredOutput)
-                        .toggleStyle(.switch)
-                        .scaleEffect(0.8)
-                        .onChange(of: viewModel.useStructuredOutput) { oldValue, newValue in
-                            print("🔧 DEBUG: Structured toggle changed to: \(newValue)")
-                        }
-                    
-                    if viewModel.useStructuredOutput {
-                        Picker("Strategy", selection: $viewModel.promptStrategy) {
-                            Text("Standard").tag("Standard")
-                            Text("Direct").tag("Direct")
-                            Text("Role-based").tag("Role-based")
-                            Text("Markdown").tag("Markdown")
-                        }
-                        .pickerStyle(.menu)
-                        .scaleEffect(0.8)
-                    }
-                    
                     Spacer()
                     
                     Button("Clear") {
@@ -127,11 +102,7 @@ struct ContentView: View {
                     .disabled(viewModel.isLoading)
                     
                     Button("Send") {
-                        if viewModel.useStructuredOutput {
-                            viewModel.sendStructuredMessage(viewModel.userInput)
-                        } else {
-                            viewModel.sendMessage()
-                        }
+                        viewModel.sendMessage()
                     }
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.return, modifiers: [])
