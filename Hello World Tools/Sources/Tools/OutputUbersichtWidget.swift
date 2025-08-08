@@ -27,29 +27,30 @@ final class OutputUbersichtWidget: Tool {
         
         @Guide(description: """
         The widget's JSX content. Each DOM element can contain a className attribute.
-        All className attributes must have a matching entry in the classNameDictionary 
+        All className attributes must have a matching entry in the styleVariables 
         where the item's key value matches the className attribute's value.
         """)
         let jsxContent: String
 
         @Guide(description: """
         The widget's positioning, in Standard CSS format. 
-        IMPORTANT: The Übersicht webview container does NOT support flexbox properties.
-        DO NOT use: display: flex, justify-content, align-items, flex-direction, etc.
-        Instead use: position: absolute/relative, margin, padding, top/left/right/bottom, text-align, etc.
+        CRITICAL: Use ONLY these positioning patterns:
+        - "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" (centers widget)
+        - "position: absolute; top: 20px; left: 20px;" (positions at top-left with offset)
+        DO NOT use: position: relative, display: flex, justify-content, align-items, flex-direction, etc.
         """)
         let cssPositioning: String
 
         @Guide(description: """
-        A JSON string where each key is the exact style variable name (with a 'Style' suffix, e.g., 'outputDivStyle') that you will use as className in your JSX: <div className={outputDivStyle}>.
+        A JSON dictionary where each key is the exact style variable name (with a 'Style' suffix, e.g., 'outputDivStyle') that you will use as className in your JSX: <div className={outputDivStyle}>.
         - Each key must appear as a variable assignment in the generated JavaScript: const outputDivStyle = css`...`;
         - In your JSX, always use className={outputDivStyle} (not a string).
         - Example: {"outputDivStyle": "padding: 10px; color: red;", "titleStyle": "font-weight: bold;"}
         - Only use camelCase or underscores in names (no hyphens allowed).
-        - This string must be valid JSON, with double quotes around keys and values.
-        - Use "{}" (empty JSON object) if there are no styles to define.
+        - Every style variable used in JSX must have a corresponding entry in this dictionary.
+        - This must be valid JSON format with double quotes around keys and values.
         """)
-        let classNameDictionary: String
+        let styleVariables: String
     }
     
     func call(arguments: Arguments) async throws -> String {
@@ -74,7 +75,7 @@ final class OutputUbersichtWidget: Tool {
             // Parse the CSS classes JSON string
             let cssClasses: [String: String]
             do {
-                let data = arguments.classNameDictionary.data(using: .utf8) ?? Data()
+                let data = arguments.styleVariables.data(using: .utf8) ?? Data()
                 cssClasses = try JSONDecoder().decode([String: String].self, from: data)
             } catch {
                 print("⚠️ Warning: Could not parse CSS classes JSON: \(error)")
@@ -110,7 +111,7 @@ final class OutputUbersichtWidget: Tool {
             print("💾 Calling FilePickerUtility to save JSX file...")
             let savedPath = await FilePickerUtility.saveFile(
                 content: jsxScript,
-                defaultName: "widget",
+                defaultName: "index",
                 fileExtension: "jsx",
                 initialDirectory: "\(NSHomeDirectory())/Library/Application Support/Übersicht/widgets"
             )
@@ -140,7 +141,7 @@ final class OutputUbersichtWidget: Tool {
         // Parse CSS classes from JSON string
         let cssClasses: [String: String]
         do {
-            let data = arguments.classNameDictionary.data(using: .utf8) ?? Data()
+            let data = arguments.styleVariables.data(using: .utf8) ?? Data()
             cssClasses = try JSONDecoder().decode([String: String].self, from: data)
         } catch {
             print("⚠️ Warning: Could not parse CSS classes JSON: \(error)")
