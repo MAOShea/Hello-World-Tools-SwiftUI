@@ -112,20 +112,26 @@ final class OutputUbersichtWidget: Tool {
             print("📄 Generated JSX script length: \(jsxScript.count) characters")
             
             // Save the file directly using FilePickerUtility
-            print("💾 Calling FilePickerUtility to save JSX file...")
-            let savedPath = await FilePickerUtility.saveFile(
-                content: jsxScript,
-                defaultName: "index",
-                fileExtension: "jsx",
+            print("💾 Calling FilePickerUtility to pick directory...")
+            let selectedDirectory = await FilePickerUtility.pickDirectory(
                 initialDirectory: "\(NSHomeDirectory())/Library/Application Support/Übersicht/widgets"
             )
             
-            if let path = savedPath {
-                print("✅ File saved successfully to: \(path)")
-                return "Widget JSX script generated and saved to: \(path)"
+            if let directory = selectedDirectory {
+                // Create the full file path
+                let filePath = "\(directory)/index.jsx"
+                
+                do {
+                    try jsxScript.write(to: URL(fileURLWithPath: filePath), atomically: true, encoding: .utf8)
+                    print("✅ File saved successfully to: \(filePath)")
+                    return "Widget JSX script generated and saved to: \(filePath)"
+                } catch {
+                    print("❌ Failed to save file: \(error)")
+                    return "Widget JSX script generated but failed to save: \(error.localizedDescription)"
+                }
             } else {
-                print("❌ File save was cancelled or failed")
-                return "Widget JSX script generated but save was cancelled"
+                print("❌ Directory picker was cancelled or failed")
+                return "Widget JSX script generated but directory selection was cancelled"
             }
             
         } catch let toolError as ToolSendWidgetToOutputError {
