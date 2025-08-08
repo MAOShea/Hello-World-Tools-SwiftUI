@@ -10,7 +10,7 @@ import Foundation
 import ChatCore
 
 struct ContentView: View {
-    @StateObject private var viewModel = ChatViewModel(aiService: ToolsEnabledAIService(), disableToolCallDetection: true)
+    @StateObject private var viewModel = ChatViewModel(aiService: ToolsEnabledAIService(), disableToolCallDetection: true, disableStructuredContent: true)
     @State private var splitPosition: CGFloat = 0.5
     
     var body: some View {

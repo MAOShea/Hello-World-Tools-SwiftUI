@@ -11,14 +11,17 @@ import SwiftUI
 import UniformTypeIdentifiers
 import ChatCore
 
-@Observable
-class OutputUbersichtWidget: Tool {
+final class OutputUbersichtWidget: Tool {
     let name = "OutputUbersichtWidget"
     let description = "Sends a Übersicht widget's properties to an output and returns a success confirmation message."
     
     @Generable
-    struct Arguments {
-        @Guide(description: "A bash command that will be executed later.")
+    struct Arguments: Codable {
+        @Guide(description: """
+        A bash command that will be executed later.
+        - If the command contains double quotes (\\"), you must escape them as \\\\".
+        - Example: To echo \"hello world\", use 'echo \\\\\"hello world\\\\\"'.
+        """)
         let bashCommand: String
 
         @Guide(description: "The widget's refresh frequency in milliseconds.")
@@ -35,14 +38,18 @@ class OutputUbersichtWidget: Tool {
         let cssPositioning: String
 
         @Guide(description: """
-        JSON string representation of Emotion-style CSS items. Format: {"className1": "css1", "className2": "css2"}.
-        The key strings match className attributes in the jsxContent. Use "{}" if no CSS classes are needed.
-        Note: CSS class names should use camelCase or underscores, not hyphens, as they become JavaScript variable names.
+        A JSON string where each key is the exact style variable name (with a 'Style' suffix, e.g., 'outputDivStyle') that you will use as className in your JSX: <div className={outputDivStyle}>.
+        - Each key must appear as a variable assignment in the generated JavaScript: const outputDivStyle = css`...`;
+        - In your JSX, always use className={outputDivStyle} (not a string).
+        - Example: {"outputDivStyle": "padding: 10px; color: red;", "titleStyle": "font-weight: bold;"}
+        - Only use camelCase or underscores in names (no hyphens allowed).
+        - This string must be valid JSON, with double quotes around keys and values.
+        - Use "{}" (empty JSON object) if there are no styles to define.
         """)
         let classNameDictionary: String
     }
     
-    func call(arguments: Arguments) async throws -> ToolOutput {
+    func call(arguments: Arguments) async throws -> String {
         do {
             // Validate arguments
             guard !arguments.bashCommand.isEmpty else {
@@ -107,18 +114,18 @@ class OutputUbersichtWidget: Tool {
             
             if let path = savedPath {
                 print("✅ File saved successfully to: \(path)")
-                return ToolOutput("Widget JSX script generated and saved to: \(path)")
+                return "Widget JSX script generated and saved to: \(path)"
             } else {
                 print("❌ File save was cancelled or failed")
-                return ToolOutput("Widget JSX script generated but save was cancelled")
+                return "Widget JSX script generated but save was cancelled"
             }
             
         } catch let toolError as ToolSendWidgetToOutputError {
             print("❌ ToolSendWidgetToOutput error: \(toolError.localizedDescription)")
-            throw toolError
+            return toolError.localizedDescription
         } catch {
             print("❌ Unexpected error in ToolSendWidgetToOutput: \(error)")
-            throw ToolSendWidgetToOutputError.unexpectedError(error)
+            return "Unexpected error: \(error.localizedDescription)"
         }
     }
     
@@ -154,7 +161,7 @@ class OutputUbersichtWidget: Tool {
             \(arguments.jsxContent)
         );
 
-        export const className = css`
+        export const className = `
         \(arguments.cssPositioning)
         `;
 
@@ -175,7 +182,7 @@ class OutputUbersichtWidget: Tool {
         }
         
         return cssClasses.map { className, css in
-            "const \(className)Style = css`\(css)`;"
+            "const \(className) = css`\(css)`;"
         }.joined(separator: "\n")
     }
     
@@ -215,3 +222,4 @@ class OutputUbersichtWidget: Tool {
         }
     }
 } 
+
