@@ -19,8 +19,6 @@ final class OutputUbersichtWidget: Tool {
     struct Arguments: Codable {
         @Guide(description: """
         A bash command that will be executed later.
-        - If the command contains double quotes (\\"), you must escape them as \\\\".
-        - Example: To echo \"hello world\", use 'echo \\\\\"hello world\\\\\"'.
         """)
         let bashCommand: String
 
@@ -34,7 +32,12 @@ final class OutputUbersichtWidget: Tool {
         """)
         let jsxContent: String
 
-        @Guide(description: "The widget's positioning, in Standard CSS format ().")
+        @Guide(description: """
+        The widget's positioning, in Standard CSS format. 
+        IMPORTANT: The Übersicht webview container does NOT support flexbox properties.
+        DO NOT use: display: flex, justify-content, align-items, flex-direction, etc.
+        Instead use: position: absolute/relative, margin, padding, top/left/right/bottom, text-align, etc.
+        """)
         let cssPositioning: String
 
         @Guide(description: """
@@ -147,6 +150,9 @@ final class OutputUbersichtWidget: Tool {
         // Convert CSS classes to CSS variables
         let cssVariables = convertCssClassesToVariables(cssClasses)
         
+        // Escape the bash command for JavaScript string interpolation
+        let escapedBashCommand = escapeBashCommandForJavaScript(arguments.bashCommand)
+        
         // Generate JSX using string interpolation
         let jsxContent = """
         import { css } from 'uebersicht'; // Optional, use when Emotion's css functions are needed.
@@ -154,7 +160,7 @@ final class OutputUbersichtWidget: Tool {
 
         /* ----- Übersicht exports ---- */
 
-        export const command = "\(arguments.bashCommand)"
+        export const command = "\(escapedBashCommand)"
         export const refreshFrequency = \(arguments.refreshFrequency)
 
         export const render = ({ data_in }) => (
@@ -174,6 +180,11 @@ final class OutputUbersichtWidget: Tool {
         print("📄 Generated JSX length: \(jsxContent.count) characters")
         
         return jsxContent
+    }
+    
+    private func escapeBashCommandForJavaScript(_ command: String) -> String {
+        // Escape double quotes for JavaScript string interpolation
+        return command.replacingOccurrences(of: "\"", with: "\\\"")
     }
     
     private func convertCssClassesToVariables(_ cssClasses: [String: String]) -> String {
