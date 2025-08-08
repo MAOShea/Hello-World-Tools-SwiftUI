@@ -29,6 +29,10 @@ final class OutputUbersichtWidget: Tool {
         The widget's JSX content. Each DOM element can contain a className attribute.
         All className attributes must have a matching entry in the styleVariables 
         where the item's key value matches the className attribute's value.
+        JSX must have a single root element. Examples:
+        - Correct: <div className={containerStyle}><span>Hello</span><span>World</span></div>
+        - Correct: <div className={outputDivStyle}>Hello World</div>
+        - Incorrect: <span>Hello</span><span>World</span> (multiple root elements)
         """)
         let jsxContent: String
 

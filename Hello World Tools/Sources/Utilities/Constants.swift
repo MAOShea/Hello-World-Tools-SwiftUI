@@ -39,6 +39,10 @@ enum Constants {
            DO NOT use: position: relative, display: flex, justify-content, align-items, flex-direction, etc.
          - jsxContent: a block of JSX content containing any structure of DOM elements (typically nested 
           <div> blocks with a root <div>) that produces the desired widget;
+           JSX must have a single root element. Examples:
+           - Correct: <div className={containerStyle}><span>Hello</span><span>World</span></div>
+           - Correct: <div className={outputDivStyle}>Hello World</div>
+           - Incorrect: <span>Hello</span><span>World</span> (multiple root elements)
          - styleVariables: a JSON string containing a dictionary mapping each style variable name (ending with 'Style', e.g., 'outputDivStyle') to its Emotion-style CSS string.
            - Each variable must be declared as: const outputDivStyle = css`...`;
            - In your JSX content, always reference styles as className={outputDivStyle}.
