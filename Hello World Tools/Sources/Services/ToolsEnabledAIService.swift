@@ -27,7 +27,6 @@ public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable
         // Create tools array
         let tools: [any Tool] = [
             OutputUbersichtWidget()
-            , TotalLengthOfStrings()
         ]
         
         // Configure session with tools

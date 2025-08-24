@@ -7,19 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		278799DC2E26ABE200D6B5CB /* libChatCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 278799DB2E26ABD600D6B5CB /* libChatCore.dylib */; };
-		278799DD2E26ABE300D6B5CB /* libChatCore.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 278799DB2E26ABD600D6B5CB /* libChatCore.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		27BAB8B42E23DF82006D9733 /* FoundationModels.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BAB8B32E23DF82006D9733 /* FoundationModels.framework */; };
+		DC7AC7282E5B466D00321C4C /* libChatCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7AC7272E5B465B00321C4C /* libChatCore.dylib */; };
+		DC7AC7292E5B466D00321C4C /* libChatCore.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = DC7AC7272E5B465B00321C4C /* libChatCore.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		278799DA2E26ABD600D6B5CB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 278799D42E26ABD600D6B5CB /* ChatCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 27C12B032E21624700017A27;
-			remoteInfo = ChatCore;
-		};
 		27BAB8272E22CC35006D9733 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 27BAB8112E22CC34006D9733 /* Project object */;
@@ -34,16 +27,23 @@
 			remoteGlobalIDString = 27BAB8182E22CC34006D9733;
 			remoteInfo = "Hello World Tools";
 		};
+		DC7AC7262E5B465B00321C4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC7AC7122E5B465B00321C4C /* ChatCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 27C12B032E21624700017A27;
+			remoteInfo = ChatCore;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		278799DE2E26ABE300D6B5CB /* Embed Libraries */ = {
+		DC7AC72A2E5B466D00321C4C /* Embed Libraries */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				278799DD2E26ABE300D6B5CB /* libChatCore.dylib in Embed Libraries */,
+				DC7AC7292E5B466D00321C4C /* libChatCore.dylib in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -57,6 +57,7 @@
 		27BAB8302E22CC35006D9733 /* Hello World ToolsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Hello World ToolsUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		27BAB8B32E23DF82006D9733 /* FoundationModels.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FoundationModels.framework; path = System/Library/Frameworks/FoundationModels.framework; sourceTree = SDKROOT; };
 		27BAB8B52E23DF96006D9733 /* libChatCore.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libChatCore.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC7AC7122E5B465B00321C4C /* ChatCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ChatCore.xcodeproj; path = ../chatcore/ChatCore.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -83,7 +84,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				27BAB8B42E23DF82006D9733 /* FoundationModels.framework in Frameworks */,
-				278799DC2E26ABE200D6B5CB /* libChatCore.dylib in Frameworks */,
+				DC7AC7282E5B466D00321C4C /* libChatCore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,7 +108,6 @@
 		278799D72E26ABD600D6B5CB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				278799DB2E26ABD600D6B5CB /* libChatCore.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -137,10 +137,19 @@
 		27BAB8B22E23DF82006D9733 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DC7AC7122E5B465B00321C4C /* ChatCore.xcodeproj */,
 				27BAB8B52E23DF96006D9733 /* libChatCore.dylib */,
 				27BAB8B32E23DF82006D9733 /* FoundationModels.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC7AC7132E5B465B00321C4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DC7AC7272E5B465B00321C4C /* libChatCore.dylib */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -153,7 +162,7 @@
 				27BAB8152E22CC34006D9733 /* Sources */,
 				27BAB8162E22CC34006D9733 /* Frameworks */,
 				27BAB8172E22CC34006D9733 /* Resources */,
-				278799DE2E26ABE300D6B5CB /* Embed Libraries */,
+				DC7AC72A2E5B466D00321C4C /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -252,6 +261,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = DC7AC7132E5B465B00321C4C /* Products */;
+					ProjectRef = DC7AC7122E5B465B00321C4C /* ChatCore.xcodeproj */;
+				},
+				{
 					ProductGroup = 278799D72E26ABD600D6B5CB /* Products */;
 					ProjectRef = 278799D42E26ABD600D6B5CB /* ChatCore.xcodeproj */;
 				},
@@ -266,11 +279,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		278799DB2E26ABD600D6B5CB /* libChatCore.dylib */ = {
+		DC7AC7272E5B465B00321C4C /* libChatCore.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
 			path = libChatCore.dylib;
-			remoteRef = 278799DA2E26ABD600D6B5CB /* PBXContainerItemProxy */;
+			remoteRef = DC7AC7262E5B465B00321C4C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -465,7 +478,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F42CBRG8J4;
+				DEVELOPMENT_TEAM = S3P44NRLCW;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
@@ -496,7 +509,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F42CBRG8J4;
+				DEVELOPMENT_TEAM = S3P44NRLCW;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
