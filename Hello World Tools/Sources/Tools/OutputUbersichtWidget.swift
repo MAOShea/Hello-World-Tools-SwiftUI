@@ -12,13 +12,13 @@ import UniformTypeIdentifiers
 import ChatCore
 
 final class OutputUbersichtWidget: Tool {
-    let name = "OutputUbersichtWidget"
-    let description = "Sends a Übersicht widget's properties to an output and returns a success confirmation message."
+    let name = "CreateUbersichtWidget"
+    let description = "Creates an Übersicht Widget. Call this tool when prompted to create a widget."
     
     @Generable
     struct Arguments: Codable {
         @Guide(description: """
-        A bash command that will be executed later.
+        A bash command who's output will be passed to the JSX body as {output}
         """)
         let bashCommand: String
 
@@ -26,7 +26,7 @@ final class OutputUbersichtWidget: Tool {
         let refreshFrequency: Int
         
         @Guide(description: """
-        The widget's JSX content. Each DOM element can contain a className attribute.
+        The widget's body written in JSX. Each DOM element can contain a className attribute.
         All className attributes must have a matching entry in the styleVariables 
         where the item's key value matches the className attribute's value.
         JSX must have a single root element. Examples:
@@ -113,26 +113,25 @@ final class OutputUbersichtWidget: Tool {
             
             // Save the file directly using FilePickerUtility
             print("💾 Calling FilePickerUtility to pick directory...")
-            let selectedDirectory = await FilePickerUtility.pickDirectory(
-                initialDirectory: "\(NSHomeDirectory())/Library/Application Support/Übersicht/widgets"
-            )
+            let directory = "\(NSHomeDirectory())/Library/Application Support/Übersicht/widgets"
             
-            if let directory = selectedDirectory {
-                // Create the full file path
-                let filePath = "\(directory)/index.jsx"
-                
-                do {
-                    try jsxScript.write(to: URL(fileURLWithPath: filePath), atomically: true, encoding: .utf8)
-                    print("✅ File saved successfully to: \(filePath)")
-                    return "Widget JSX script generated and saved to: \(filePath)"
-                } catch {
-                    print("❌ Failed to save file: \(error)")
-                    return "Widget JSX script generated but failed to save: \(error.localizedDescription)"
-                }
-            } else {
-                print("❌ Directory picker was cancelled or failed")
-                return "Widget JSX script generated but directory selection was cancelled"
+            
+//            await FilePickerUtility.pickDirectory(
+//                initialDirectory: "\(NSHomeDirectory())/Library/Application Support/Übersicht/widgets"
+//            )
+            
+            // Create the full file path
+            let filePath = "\(directory)/index.jsx"
+            
+            do {
+                try jsxScript.write(to: URL(fileURLWithPath: filePath), atomically: true, encoding: .utf8)
+                print("✅ File saved successfully to: \(filePath)")
+                return "Widget JSX script generated and saved to: \(filePath)"
+            } catch {
+                print("❌ Failed to save file: \(error)")
+                return "Widget JSX script generated but failed to save: \(error.localizedDescription)"
             }
+            
             
         } catch let toolError as ToolSendWidgetToOutputError {
             print("❌ ToolSendWidgetToOutput error: \(toolError.localizedDescription)")
@@ -166,7 +165,7 @@ final class OutputUbersichtWidget: Tool {
         
         // Generate JSX using string interpolation
         let jsxContent = """
-        import { css } from 'uebersicht'; // Optional, use when Emotion's css functions are needed.
+        import { css, React } from 'uebersicht'; 
         import { styled } from 'uebersicht'; // Optional, use when Emotion styled functions are needed.
 
         /* ----- Übersicht exports ---- */
@@ -174,9 +173,9 @@ final class OutputUbersichtWidget: Tool {
         export const command = "\(escapedBashCommand)"
         export const refreshFrequency = \(arguments.refreshFrequency)
 
-        export const render = ({ data_in }) => (
+        export const render = ({ output }) => {
             \(arguments.jsxContent)
-        );
+        };
 
         export const className = `
         \(arguments.cssPositioning)

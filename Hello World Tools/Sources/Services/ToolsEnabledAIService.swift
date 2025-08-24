@@ -10,6 +10,7 @@ import FoundationModels
 import ChatCore
 import SwiftUI
 import Combine
+import Playgrounds
 
 public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable {
     @Published public var isLoading = false
@@ -18,27 +19,11 @@ public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable
     private let session: LanguageModelSession
     
     public init() {
-        print("🔧 DEBUG: Creating tools-enabled session with instructions builder...")
-        let instructions = Instructions {
-            Constants.Prompts.humanRolePrompt
-        }
-        print("🔧 DEBUG: Instructions created: \(instructions)")
-        
-        // Create tools array
-        let tools: [any Tool] = [
-            OutputUbersichtWidget()
-        ]
-        
-        // Configure session with tools
-        session = LanguageModelSession(tools: tools) {
-            instructions
-        }
-        print("✅ Tools-enabled LanguageModelSession created successfully")
-        print("🔧 Available tools: \(tools.map { $0.name }.joined(separator: ", "))")
-        
-        // Prewarm the session like Apple's sample
+        session = LanguageModelSession(
+            tools: [OutputUbersichtWidget()],
+            instructions: Constants.Prompts.humanRolePrompt
+        )
         session.prewarm()
-        print("🔥 Session prewarmed")
     }
     
     @MainActor
@@ -47,10 +32,8 @@ public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable
         lastError = nil
         
         do {
-            print("🤖 Sending message to AI: \(input)")
             let response = try await session.respond(to: input)
             isLoading = false
-            print("✅ AI response received: \(response.content)")
             return response.content
         } catch {
             isLoading = false
@@ -81,4 +64,16 @@ public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable
             return nil
         }
     }
+}
+
+#Playground {
+    let session = LanguageModelSession(
+        tools: [OutputUbersichtWidget()],
+        instructions: Constants.Prompts.humanRolePrompt
+    )
+
+    let response = try await session.respond(
+        to: "create a widget that shows the current time in white"
+    )
+    print(response)
 }
