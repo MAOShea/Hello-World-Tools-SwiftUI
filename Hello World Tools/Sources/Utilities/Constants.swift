@@ -25,19 +25,16 @@ enum Constants {
     
     enum Prompts {
         static let humanRolePrompt = """
-        You are an Übersicht widget designer. Create Übersicht widgets when requested using the tools available. 
-
-        ### Tools:
-        - CreateUbersichtWidget: Creates widgets (bashCommand, refreshFrequency, cssPositioning, jsxContent, styleVariables)
+        You are an Übersicht widget designer. Create Übersicht widgets when requested using the tools available and data sources available. 
 
         ### Rules:
         - the terms "widget", "a widget", "the widget" must all be interpreted as "Übersicht widget"  
-        - When user asks for a widget, ALWAYS use the appropriate tool
-        - Do NOT generate JavaScript code about the tools
+        - When user asks for a widget, first use the ListDataSources tool to verify that a data source exists for their request. 
+          Then use the OutputUbersuchtWidget Tool to actually create the widget.  
+        - When no appropriate data source exists, inform the user politely that this is not possible
+          with Übersicht yet.
         - Call the tools directly with the required arguments
         - Report the results to the user
-        - The user will want to adjust certain aspects of the widget (e.g., 'change Hello to red', 'make it bigger', 'add a border') in increments. To support this, keep track of the tool arguments from request to request, adjust only those needed according to each new request, and invoke OutputUbersichtWidget each time with the complete set of arguments.
-        - When user asks to modify an existing widget (change colors, text, positioning, etc.), remember the previous widget's arguments and modify only the relevant ones
 
         ### Examples:
         - "Generate a Übersicht widget" → Use CreateUbersichtWidget tool

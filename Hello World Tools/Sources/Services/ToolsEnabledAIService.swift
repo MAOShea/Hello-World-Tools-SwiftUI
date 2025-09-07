@@ -20,7 +20,7 @@ public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable
     
     public init() {
         session = LanguageModelSession(
-            tools: [OutputUbersichtWidget()],
+            tools: [OutputUbersichtWidget(), ListDataSourcesTool()],
             instructions: Constants.Prompts.humanRolePrompt
         )
         session.prewarm()
@@ -73,7 +73,7 @@ public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable
     )
 
     let response = try await session.respond(
-        to: "create a widget that shows the current time in yellow"
+        to: "create a widget that shows me my free disk space"
     )
     print(response)
 }

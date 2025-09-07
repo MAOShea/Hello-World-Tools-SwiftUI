@@ -21,9 +21,10 @@ final class OutputUbersichtWidget: Tool {
     @Generable
     struct Arguments: Codable {
         @Guide(description: """
-        A bash command who's output will be passed to the JSX body as {output}
+        The data source who's output will be passed to the JSX body as {output}. 
+        Only call this with a valid data source listed by ListDataSources.
         """)
-        let bashCommand: String
+        let dataSource: String
 
         @Guide(description: "The widget's refresh frequency in milliseconds.")
         let refreshFrequency: Int
@@ -43,6 +44,10 @@ final class OutputUbersichtWidget: Tool {
 
     
     func call(arguments: Arguments) async throws -> String {
+        print("DEBUG: using data source \(arguments.dataSource)")
+        guard let dataSource = getDataSource(name: arguments.dataSource) else {
+            return "// Error: Invalid data source: \(arguments.dataSource)\n// Unable to generate Übersicht widget JSX."
+        }
         
         let errors = validateRenderFunction(code: arguments.renderFunction)
         if let errorMessage = errors {
@@ -52,10 +57,12 @@ final class OutputUbersichtWidget: Tool {
             return fullMessage;
         }
         
-        
-        
-        let jsxScript = generateUbersichtJSX(arguments: arguments)
-        
+        let jsxScript = generateUbersichtJSX(
+            renderFunction: arguments.renderFunction,
+            dataSource: dataSource,
+            refreshFrequency: arguments.refreshFrequency,
+            position: arguments.cssPositioning
+        )
         
         do {
             let filePath = "\(directory)/index.jsx"
@@ -64,22 +71,28 @@ final class OutputUbersichtWidget: Tool {
         } catch {
             return "Widget JSX script generated but failed to save: \(error.localizedDescription)"
         }
-            
-        
     }
     
     private func validateRenderFunction(code: String) -> String? {
         return lintJSX(source: "import React from 'react'; \(code)")
     }
     
+    private func getDataSource(name: String) -> DataSource? {
+        return DataSourcesConfig.sources[name]
+    }
+    
     
     // MARK: - JSX Generation with String Interpolation
     
-    private func generateUbersichtJSX(arguments: Arguments) -> String {
+    private func generateUbersichtJSX(
+        renderFunction: String,
+        dataSource: DataSource,
+        refreshFrequency: Int,
+        position: String
+    ) -> String {
         print("🔧 Generating Übersicht JSX with string interpolation...")
-        
-        // Escape the bash command for JavaScript string interpolation
-        let escapedBashCommand = escapeBashCommandForJavaScript(arguments.bashCommand)
+
+        let escapedBashCommand = escapeBashCommandForJavaScript(dataSource.command)
         
         // Generate JSX using string interpolation
         let jsxContent = """
@@ -89,15 +102,14 @@ final class OutputUbersichtWidget: Tool {
         /* ----- Übersicht exports ---- */
 
         export const command = "\(escapedBashCommand)"
-        export const refreshFrequency = \(arguments.refreshFrequency)
+        export const refreshFrequency = \(refreshFrequency)
 
-        export const render = \(arguments.renderFunction)
+        export const render = \(renderFunction)
 
-        export const className = "\(arguments.cssPositioning)";
+        export const className = "\(position)";
         """
         
         print("✅ Übersicht JSX generated successfully")
-        print("📄 Generated JSX length: \(jsxContent.count) characters")
         
         return jsxContent
     }
@@ -153,5 +165,4 @@ final class OutputUbersichtWidget: Tool {
         }
     }
 } 
-
 
