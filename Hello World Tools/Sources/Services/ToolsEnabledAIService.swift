@@ -73,7 +73,7 @@ public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable
     )
 
     let response = try await session.respond(
-        to: "create a widget that shows the current time in white"
+        to: "create a widget that shows the current time in yellow"
     )
     print(response)
 }
