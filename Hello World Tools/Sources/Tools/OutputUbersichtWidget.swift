@@ -30,8 +30,8 @@ final class OutputUbersichtWidget: Tool {
         let refreshFrequency: Int
         
         @Guide(description: """
-        A React functional component as a JavaScript arrow function that renders the widget body. 
-        It receives a single "output" prop. Example: ({output}) => { return <h1>output</h1> }
+        A React functional component as a JavaScript arrow function that renders the widget body using JSX. 
+        It receives a single "output" prop. Example: ({output}) => { return <h1>{output}</h1> }
         """)
         let renderFunction: String
 
