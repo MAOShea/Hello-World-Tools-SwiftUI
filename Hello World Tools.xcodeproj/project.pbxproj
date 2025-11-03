@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		27BAB8B42E23DF82006D9733 /* FoundationModels.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BAB8B32E23DF82006D9733 /* FoundationModels.framework */; };
-		DC7AC7282E5B466D00321C4C /* libChatCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7AC7272E5B465B00321C4C /* libChatCore.dylib */; };
-		DC7AC7292E5B466D00321C4C /* libChatCore.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = DC7AC7272E5B465B00321C4C /* libChatCore.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		27DF67442E71CD6500DCF376 /* libChatCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27DF67412E71CAED00DCF376 /* libChatCore.dylib */; };
+		27DF67452E71CD6500DCF376 /* libChatCore.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 27DF67412E71CAED00DCF376 /* libChatCore.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,9 +27,9 @@
 			remoteGlobalIDString = 27BAB8182E22CC34006D9733;
 			remoteInfo = "Hello World Tools";
 		};
-		DC7AC7262E5B465B00321C4C /* PBXContainerItemProxy */ = {
+		27DF67402E71CAED00DCF376 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DC7AC7122E5B465B00321C4C /* ChatCore.xcodeproj */;
+			containerPortal = 278799D42E26ABD600D6B5CB /* ChatCore.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 27C12B032E21624700017A27;
 			remoteInfo = ChatCore;
@@ -37,13 +37,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		DC7AC72A2E5B466D00321C4C /* Embed Libraries */ = {
+		27DF67462E71CD6500DCF376 /* Embed Libraries */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DC7AC7292E5B466D00321C4C /* libChatCore.dylib in Embed Libraries */,
+				27DF67452E71CD6500DCF376 /* libChatCore.dylib in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -84,7 +84,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				27BAB8B42E23DF82006D9733 /* FoundationModels.framework in Frameworks */,
-				DC7AC7282E5B466D00321C4C /* libChatCore.dylib in Frameworks */,
+				27DF67442E71CD6500DCF376 /* libChatCore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,6 +108,7 @@
 		278799D72E26ABD600D6B5CB /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				27DF67412E71CAED00DCF376 /* libChatCore.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -147,7 +148,6 @@
 		DC7AC7132E5B465B00321C4C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DC7AC7272E5B465B00321C4C /* libChatCore.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,7 +162,7 @@
 				27BAB8152E22CC34006D9733 /* Sources */,
 				27BAB8162E22CC34006D9733 /* Frameworks */,
 				27BAB8172E22CC34006D9733 /* Resources */,
-				DC7AC72A2E5B466D00321C4C /* Embed Libraries */,
+				27DF67462E71CD6500DCF376 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -279,11 +279,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		DC7AC7272E5B465B00321C4C /* libChatCore.dylib */ = {
+		27DF67412E71CAED00DCF376 /* libChatCore.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
 			path = libChatCore.dylib;
-			remoteRef = DC7AC7262E5B465B00321C4C /* PBXContainerItemProxy */;
+			remoteRef = 27DF67402E71CAED00DCF376 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -478,7 +478,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S3P44NRLCW;
+				DEVELOPMENT_TEAM = F42CBRG8J4;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
@@ -509,7 +509,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S3P44NRLCW;
+				DEVELOPMENT_TEAM = F42CBRG8J4;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;

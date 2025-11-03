@@ -12,7 +12,7 @@ func lintJSX(source: String) -> String? {
     task.launchPath = "/bin/zsh"
     task.arguments = [
         "-lc",
-        "npx eslint --quiet --stdin -c /Users/felix/Workspace/Hello-World-Tools-SwiftUI/eslint.config.mjs",
+        "npx eslint --quiet --stdin -c '/Users/mike/Documents/hwt/Hello World Tools/eslint.config.mjs",
     ]
 
     let inPipe = Pipe()

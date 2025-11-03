@@ -20,8 +20,8 @@ public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable
     
     public init() {
         session = LanguageModelSession(
-            tools: [OutputUbersichtWidget(), ListDataSourcesTool()],
-            instructions: Constants.Prompts.humanRolePrompt
+            tools: [WriteUbersichtWidgetToFileSystem(), ListDataSourcesTool()],
+            instructions: Constants.Prompts.humanRolePrompt2
         )
         session.prewarm()
     }
@@ -68,8 +68,8 @@ public final class ToolsEnabledAIService: AIServiceProtocol, @unchecked Sendable
 
 #Playground {
     let session = LanguageModelSession(
-        tools: [OutputUbersichtWidget()],
-        instructions: Constants.Prompts.humanRolePrompt
+        tools: [WriteUbersichtWidgetToFileSystem()],
+        instructions: Constants.Prompts.humanRolePrompt2
     )
 
     let response = try await session.respond(
